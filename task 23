@@ -1,0 +1,133 @@
+Creating a complete Page Object Model (POM) framework with Selenium, TestNG, and PageFactory involves multiple steps. Below is a simplified example for the Signup and Login pages of https://www.demoblaze.com/. This example assumes you have set up your Selenium WebDriver, TestNG, and the necessary dependencies in your project.
+
+Page Object Classes:
+
+
+BasePage:
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.PageFactory;
+
+public class BasePage {
+
+    protected WebDriver driver;
+
+    public BasePage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+}
+
+HomePage:
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+public class HomePage extends BasePage {
+
+    @FindBy(id = "login2")
+    private WebElement loginButton;
+
+    public HomePage(WebDriver driver) {
+        super(driver);
+    }
+
+    public void clickLoginButton() {
+        loginButton.click();
+    }
+}
+
+LoginPage:
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+public class LoginPage extends BasePage {
+
+    @FindBy(id = "loginusername")
+    private WebElement usernameInput;
+
+    @FindBy(id = "loginpassword")
+    private WebElement passwordInput;
+
+    @FindBy(xpath = "//button[text()='Log in']")
+    private WebElement loginButton;
+
+    public LoginPage(WebDriver driver) {
+        super(driver);
+    }
+
+    public void login(String username, String password) {
+        usernameInput.sendKeys(username);
+        passwordInput.sendKeys(password);
+        loginButton.click();
+    }
+}
+
+SignupPage:
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+public class SignupPage extends BasePage {
+
+    @FindBy(id = "sign-username")
+    private WebElement usernameInput;
+
+    @FindBy(id = "sign-password")
+    private WebElement passwordInput;
+
+    @FindBy(xpath = "//button[text()='Sign up']")
+    private WebElement signupButton;
+
+    public SignupPage(WebDriver driver) {
+        super(driver);
+    }
+
+    public void signup(String username, String password) {
+        usernameInput.sendKeys(username);
+        passwordInput.sendKeys(password);
+        signupButton.click();
+    }
+}
+
+TestNG Test Class:
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+public class DemoBlazeTest {
+
+    private WebDriver driver;
+
+    @BeforeClass
+    public void setup() {
+        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
+        driver = new ChromeDriver();
+        driver.get("https://www.demoblaze.com/");
+    }
+
+    @Test
+    public void signupAndLoginTest() {
+        HomePage homePage = new HomePage(driver);
+        homePage.clickLoginButton();
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("your_username", "your_password");
+
+        // Add assertions to verify the login is successful
+    }
+
+    @AfterClass
+    public void teardown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
